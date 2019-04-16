@@ -19,3 +19,4 @@ typedef struct {
 //extern Token tokens[100];
 
 void tokenize(char *p);
+void tokenize_vec(char *p);

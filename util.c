@@ -1,10 +1,12 @@
 #include "util.h"
 #include "token.h"
-extern Token tokens[100];
+#include "vector.h"
+//extern Token tokens[100];
+extern Vector *tokens_vec;
 
 void error(int i)
 {
-	fprintf(stderr, "unexpected token: %s\n", tokens[i].input);
+	fprintf(stderr, "unexpected token: %s\n", ((Token *)tokens_vec->data[i])->input);
 	exit(1);
 }
 

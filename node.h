@@ -19,7 +19,9 @@ typedef struct Node {
 Node *new_node(int ty, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 int consume(int ty);
+int consume_vec(int ty);
 Node *add();
 Node *mul();
 Node *term();
+Node *term_vec();
 void gen(Node *node);

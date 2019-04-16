@@ -1,9 +1,11 @@
 #include "token.h"
+#include "vector.h"
 
+//Token tokens[100];
+Vector *tokens_vec;
 
-Token tokens[100];
 int pos = 0;
-
+/*
 void tokenize(char *p)
 {
 	int i = 0;
@@ -46,3 +48,53 @@ void tokenize(char *p)
 	tokens[i].ty = TK_EOF;
 	tokens[i].input = p;
 }
+*/
+
+
+void tokenize_vec(char *p)
+{
+	tokens_vec = new_vector();
+	while (*p)
+	{
+		Token *token;
+		token = malloc(sizeof(Token));
+		if (isspace(*p))
+		{
+			p++;
+			continue;
+		}
+
+		if (*p == '+'
+				|| *p == '-'
+				|| *p == '*'
+				|| *p == '/'
+				|| *p == '('
+				|| *p == ')'
+				)
+		{
+			token->ty = *p;
+			token->input = p;
+			p++;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		if (isdigit(*p))
+		{
+			token->ty = TK_NUM;
+			token->input = p;
+			token->val = strtol(p, &p, 10);
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		fprintf(stderr, "can't tokenize: %s\n", p);
+		exit(1);
+	}
+	Token *eof_token;
+	eof_token = malloc(sizeof(Token));
+	eof_token->ty = TK_EOF;
+	eof_token->input = p;
+	vec_push(tokens_vec, (void *)eof_token);
+}
+

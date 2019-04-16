@@ -1,8 +1,10 @@
 #include "node.h"
 #include "token.h"
 #include "util.h"
+#include "vector.h"
 
-extern Token tokens[100];
+//extern Token tokens[100];
+extern Vector *tokens_vec;
 extern int pos;
 
 
@@ -22,21 +24,27 @@ Node *new_node_num(int val) {
 	return node;
 }
 
-
+/*
 int consume(int ty) {
 	if (tokens[pos].ty != ty)
 		return 0;
 	pos++;
 	return 1;
 }
-
+*/
+int consume_vec(int ty) {
+	if ( ((Token *)(tokens_vec->data[pos]))->ty != ty )
+		return 0;
+	pos++;
+	return 1;
+}
 
 Node *add() {
 	Node *node = mul();
 	for (;;) {
-		if (consume('+'))
+		if (consume_vec('+'))
 			node = new_node('+', node, mul());
-		else if (consume('-'))
+		else if (consume_vec('-'))
 			node = new_node('-', node, mul());
 		else
 			return node;
@@ -44,20 +52,21 @@ Node *add() {
 }
 
 Node *mul() {
-	Node *node = term();
+	Node *node = term_vec();
+	//Node *node = term();
 
 	for (;;) {
-		if (consume('*'))
-			node = new_node('*', node, term());
-		else if (consume('/'))
-			node = new_node('/', node, term());
+		if (consume_vec('*'))
+			node = new_node('*', node, term_vec());
+		else if (consume_vec('/'))
+			node = new_node('/', node, term_vec());
 		else
 			return node;
 	}
 }
 
 
-
+/*
 Node *term() {
 	if (consume('(')) {
 		Node *node = add();
@@ -71,7 +80,21 @@ Node *term() {
 
 	fprintf(stderr, "This token is not NUM or open bracket: %s", tokens[pos].input);
 }
+*/
 
+Node *term_vec() {
+	if (consume_vec('(')) {
+		Node *node = add();
+		if (!consume_vec(')'))
+			fprintf(stderr, "close bracket should come after open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
+		return node;
+	}
+
+	if (((Token *) tokens_vec->data[pos])->ty == TK_NUM)
+		return new_node_num(((Token *) tokens_vec->data[pos++])->val);
+
+	fprintf(stderr, "This token is not NUM or open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
+}
 
 
 void gen(Node *node) {
