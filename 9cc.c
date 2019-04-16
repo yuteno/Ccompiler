@@ -2,62 +2,15 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "node.h"
+#include "token.h"
+#include "util.h"
 
-enum{
-	TK_NUM = 256,
-	TK_EOF,
-};
 
-typedef struct {
-	int ty;
-	int val;
-	char *input;
-} Token;
 
-Token tokens[100];
+extern Token tokens[100];
+//extern int pos;
 
-void tokenize(char *p)
-{
-	int i = 0;
-	while (*p)
-	{
-		if (isspace(*p))
-		{
-			p++;
-			continue;
-		}
-
-		if (*p == '+' || *p == '-')
-		{
-			tokens[i].ty = *p;
-			tokens[i].input = p;
-			i++;
-			p++;
-			continue;
-		}
-
-		if (isdigit(*p))
-		{
-			tokens[i].ty = TK_NUM;
-			tokens[i].input = p;
-			tokens[i].val = strtol(p, &p, 10);
-			i++;
-			continue;
-		}
-
-		fprintf(stderr, "can't tokenize: %s\n", p);
-		exit(1);
-	}
-
-	tokens[i].ty = TK_EOF;
-	tokens[i].input = p;
-}
-
-void error(int i)
-{
-	fprintf(stderr, "unexpected token: %s\n", tokens[i].input);
-	exit(1);
-}
 
 
 
@@ -68,12 +21,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	tokenize(argv[1]);
+	Node *node = add();
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
 	printf("main:\n");
 
-
+	/*
 	if (tokens[0].ty != TK_NUM) {
 		error(0);
 	}
@@ -104,6 +58,10 @@ int main(int argc, char **argv)
 		error(i);
 	}
 
+	printf("	ret\n");
+	*/
+	gen(node);
+	printf("	pop rax\n");
 	printf("	ret\n");
 	return 0;
 }

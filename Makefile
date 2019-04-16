@@ -1,4 +1,4 @@
-9cc: 9cc.c
+9cc: 9cc.c node.c token.c util.c
 
 test: 9cc
 	./test.sh
