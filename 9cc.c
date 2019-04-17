@@ -11,6 +11,7 @@
 
 //extern Token tokens[100];
 extern Vector *tokens_vec;
+extern Node * code[100];
 //extern int pos;
 
 
@@ -56,14 +57,25 @@ int main(int argc, char **argv)
 	}
 	//printf("now tokenize\n");
 	tokenize_vec(argv[1]);
-	Node *node = add();
+	program();
+	//Node *node = add();
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
 	printf("main:\n");
 
-	gen(node);
-	printf("	pop rax\n");
+	printf("	push rbp\n");
+	printf("	mov rbp, rsp\n");
+	printf("	sub rsp, %d\n", 8*26);
+
+	for (int i = 0; code[i]; i++) {
+		gen(code[i]);
+
+	//gen(node);
+		printf("	pop rax\n");
+	}
+	printf("	mov rsp, rbp\n");
+	printf("	pop rbp\n");
 	printf("	ret\n");
 	return 0;
 }

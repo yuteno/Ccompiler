@@ -70,9 +70,19 @@ void tokenize_vec(char *p)
 				|| *p == '/'
 				|| *p == '('
 				|| *p == ')'
+				|| *p == '='
+				|| *p == ';'
 				)
 		{
 			token->ty = *p;
+			token->input = p;
+			p++;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		if ('a' <= *p && *p <= 'z') {
+			token->ty = TK_IDENT;
 			token->input = p;
 			p++;
 			vec_push(tokens_vec, (void *) token);

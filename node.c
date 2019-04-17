@@ -7,6 +7,7 @@
 extern Vector *tokens_vec;
 extern int pos;
 
+Node *code[100];
 
 Node *new_node(int ty, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
@@ -24,14 +25,37 @@ Node *new_node_num(int val) {
 	return node;
 }
 
-/*
-int consume(int ty) {
-	if (tokens[pos].ty != ty)
-		return 0;
-	pos++;
-	return 1;
+Node *new_node_ident(char name) {
+	Node *node = malloc(sizeof(Node));
+	node->ty = ND_IDENT;
+	node->name = name;
+	return node;
 }
-*/
+
+
+Node *assign() {
+	Node *node = add();
+	while (consume_vec('='))
+		node = new_node('=', node, assign());
+	return node;
+}
+
+
+Node *stmt() {
+	Node *node = assign();
+	if (!consume_vec(';'))
+		fprintf(stderr, "this token is not ';': %s", ((Token *)(tokens_vec->data[pos]))->input);
+	return node;
+}
+
+void program() {
+	int i = 0;
+	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF)
+		code[i++] = stmt();
+	code[i] = NULL;
+}
+
+
 int consume_vec(int ty) {
 	if ( ((Token *)(tokens_vec->data[pos]))->ty != ty )
 		return 0;
@@ -53,7 +77,6 @@ Node *add() {
 
 Node *mul() {
 	Node *node = term_vec();
-	//Node *node = term();
 
 	for (;;) {
 		if (consume_vec('*'))
@@ -66,25 +89,11 @@ Node *mul() {
 }
 
 
-/*
-Node *term() {
-	if (consume('(')) {
-		Node *node = add();
-		if (!consume(')'))
-			fprintf(stderr, "close bracket should come after open bracket: %s", tokens[pos].input);
-		return node;
-	}
-
-	if (tokens[pos].ty == TK_NUM)
-		return new_node_num(tokens[pos++].val);
-
-	fprintf(stderr, "This token is not NUM or open bracket: %s", tokens[pos].input);
-}
-*/
 
 Node *term_vec() {
 	if (consume_vec('(')) {
-		Node *node = add();
+		//Node *node = add();
+		Node *node = assign();
 		if (!consume_vec(')'))
 			fprintf(stderr, "close bracket should come after open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
 		return node;
@@ -93,7 +102,23 @@ Node *term_vec() {
 	if (((Token *) tokens_vec->data[pos])->ty == TK_NUM)
 		return new_node_num(((Token *) tokens_vec->data[pos++])->val);
 
+
+	if (((Token *) tokens_vec->data[pos])->ty == TK_IDENT)
+		return new_node_ident( *(((Token *) tokens_vec->data[pos++])->input));
+
+
 	fprintf(stderr, "This token is not NUM or open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
+}
+
+
+void gen_lval(Node *node) {
+	if (node->ty != ND_IDENT)
+		fprintf(stderr, "left value is not variable");
+
+	int offset = ('z' - node->name + 1) * 8;
+	printf("	mov rax, rbp\n");
+	printf("	sub rax, %d\n", offset);
+	printf("	push rax\n");
 }
 
 
@@ -102,6 +127,26 @@ void gen(Node *node) {
 		printf("	push %d\n", node->val);
 		return;
 	}
+
+	if (node->ty == ND_IDENT) {
+		gen_lval(node);
+		printf("	pop rax\n");
+		printf("	mov rax, [rax]\n");
+		printf("	push rax\n");
+		return;
+	}
+
+	if (node->ty == '=') {
+		gen_lval(node->lhs);
+		gen(node->rhs);
+
+		printf("	pop rdi\n");
+		printf("	pop rax\n");
+		printf("	mov [rax], rdi\n");
+		printf("	push rdi\n");
+		return;
+	}
+
 
 	gen(node->lhs);
 	gen(node->rhs);
