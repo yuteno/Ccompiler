@@ -6,8 +6,8 @@
 //extern Token tokens[100];
 extern Vector *tokens_vec;
 extern int pos;
+Vector *code_vec;
 
-Node *code[100];
 
 Node *new_node(int ty, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
@@ -49,10 +49,20 @@ Node *stmt() {
 }
 
 void program() {
+	code_vec = new_vector();
 	int i = 0;
-	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF)
-		code[i++] = stmt();
-	code[i] = NULL;
+	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
+		Node *_code;
+		_code = malloc(sizeof(Node));
+		//code[i++] = stmt();
+		_code = stmt();
+		vec_push(code_vec, (void *) _code);
+	}
+	Node *null_code;
+	null_code = NULL;
+	vec_push(code_vec, (void *) null_code);
+
+	//code[i] = NULL;
 }
 
 

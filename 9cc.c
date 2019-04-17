@@ -11,7 +11,7 @@
 
 //extern Token tokens[100];
 extern Vector *tokens_vec;
-extern Node * code[100];
+extern Vector *code_vec;
 //extern int pos;
 
 
@@ -68,8 +68,9 @@ int main(int argc, char **argv)
 	printf("	mov rbp, rsp\n");
 	printf("	sub rsp, %d\n", 8*26);
 
-	for (int i = 0; code[i]; i++) {
-		gen(code[i]);
+	//for (int i = 0; code[i]; i++) {
+	for (int i = 0; (Node *)code_vec->data[i]; i++) {
+		gen( (Node *)code_vec->data[i]);
 
 	//gen(node);
 		printf("	pop rax\n");
