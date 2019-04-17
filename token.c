@@ -64,6 +64,14 @@ void tokenize_vec(char *p)
 			continue;
 		}
 
+		if (strncmp(p, "return", 6) == 0) {
+			token->ty = TK_RETURN;
+			token->input = p;
+			p += 6;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
 		if (*p == '+'
 				|| *p == '-'
 				|| *p == '*'

@@ -26,4 +26,6 @@ try 4 "(3+5)/2;"
 try 4 "a=b=2;a+b;"
 try 10 "a=5;b=2;a*b;"
 try 100 "a=5;b=2;a * a * b * 2;"
+try 5 "return 5; return 4;"
+try 10 "a = 5; b = 2; return a * b;"
 echo OK

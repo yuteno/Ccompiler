@@ -42,7 +42,16 @@ Node *assign() {
 
 
 Node *stmt() {
-	Node *node = assign();
+	Node *node;
+	if (consume_vec(TK_RETURN)) {
+		node = malloc(sizeof(Node));
+		node->ty = ND_RETURN;
+		node->lhs = assign();
+	} else {
+		node = assign();
+	}
+
+
 	if (!consume_vec(';'))
 		fprintf(stderr, "this token is not ';': %s", ((Token *)(tokens_vec->data[pos]))->input);
 	return node;
@@ -133,6 +142,15 @@ void gen_lval(Node *node) {
 
 
 void gen(Node *node) {
+	if (node->ty == ND_RETURN) {
+		gen(node->lhs);
+		printf("	pop rax\n");
+		printf("	mov rsp, rbp\n");
+		printf("	pop rbp\n");
+		printf("	ret\n");
+		return;
+	}
+
 	if (node->ty == ND_NUM) {
 		printf("	push %d\n", node->val);
 		return;

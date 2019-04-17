@@ -7,6 +7,7 @@
 enum {
 	TK_NUM = 256,
 	TK_IDENT,
+	TK_RETURN,
 	TK_EOF,
 };
 
