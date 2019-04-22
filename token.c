@@ -5,50 +5,6 @@
 Vector *tokens_vec;
 Map *variables;
 int pos = 0;
-/*
-void tokenize(char *p)
-{
-	int i = 0;
-	while (*p)
-	{
-		if (isspace(*p))
-		{
-			p++;
-			continue;
-		}
-
-		if (*p == '+'
-				|| *p == '-'
-				|| *p == '*'
-				|| *p == '/'
-				|| *p == '('
-				|| *p == ')'
-				)
-		{
-			tokens[i].ty = *p;
-			tokens[i].input = p;
-			i++;
-			p++;
-			continue;
-		}
-
-		if (isdigit(*p))
-		{
-			tokens[i].ty = TK_NUM;
-			tokens[i].input = p;
-			tokens[i].val = strtol(p, &p, 10);
-			i++;
-			continue;
-		}
-
-		fprintf(stderr, "can't tokenize: %s\n", p);
-		exit(1);
-	}
-
-	tokens[i].ty = TK_EOF;
-	tokens[i].input = p;
-}
-*/
 
 
 void tokenize_vec(char *p)
@@ -91,33 +47,23 @@ void tokenize_vec(char *p)
 
 		if ('a' <= *p && *p <= 'z') {
 			int variable_len = 0;
-			for (int i = 0;;i++) {
-				if (p[i] == '+'
-						|| p[i] == '-'
-						|| p[i] == '*'
-						|| p[i] == '/'
-						|| p[i] == '('
-						|| p[i] == ')'
-						|| p[i] == '='
-						|| p[i] == ';'
-				   )
-				{
-					break;
-				}
-				variable_len++;
-			}
-			char* temp_token = (char *)malloc(variable_len * sizeof(char));
-			strncpy(temp_token, p, variable_len);
+			char *dup_p = strdup(p);
+			//fprintf(stderr, "dup: %s\n", dup_p);
+			char *tp = strtok(dup_p, " /+/-/*/\//(/)/=/;");
+			//fprintf(stderr, "tp: %s\n", tp);
 
-			fprintf(stderr, "before: %s\n", p);
-			fprintf(stderr, "tokenize: %s\n", temp_token);
-			p += variable_len;
-			fprintf(stderr, "after: %s\n", p);
+
+			//fprintf(stderr, "before: %s\n", p);
+			while(('a' <= *p && *p <= 'z') || isdigit(*p)) {
+				p++;
+			}
+
+
+			//fprintf(stderr, "tokenize: %s\n", tp);
+			//fprintf(stderr, "after: %s\n", p);
 
 			token->ty = TK_IDENT;
-			//token->input = p;
-			token->input = temp_token;
-			//p++;
+			token->name = tp;
 			vec_push(tokens_vec, (void *) token);
 			continue;
 		}

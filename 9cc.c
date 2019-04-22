@@ -36,6 +36,7 @@ int main(int argc, char **argv)
 	//printf("now tokenize\n");
 	tokenize_vec(argv[1]);
 	program();
+	//fprintf(stderr, "end program\n");
 	//Node *node = add();
 
 	printf(".intel_syntax noprefix\n");

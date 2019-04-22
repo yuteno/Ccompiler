@@ -2,11 +2,14 @@
 #include "token.h"
 #include "util.h"
 #include "vector.h"
+#include "map.h"
 
 //extern Token tokens[100];
 extern Vector *tokens_vec;
 extern int pos;
 Vector *code_vec;
+Map *variable_map;
+int variable_count = 0;
 
 
 Node *new_node(int ty, Node *lhs, Node *rhs) {
@@ -29,6 +32,12 @@ Node *new_node_ident(char *name) {
 	Node *node = malloc(sizeof(Node));
 	node->ty = ND_IDENT;
 	node->name = name;
+	//fprintf(stderr, "ident name: %s\n", name);
+	if (map_get(variable_map, name) == NULL) {
+		variable_count++;
+		map_put(variable_map, name, variable_count);
+		//fprintf(stderr, "ident name: %s variable_count:%d\n", name, variable_count);
+	}
 	return node;
 }
 
@@ -59,6 +68,7 @@ Node *stmt() {
 
 void program() {
 	code_vec = new_vector();
+	variable_map = new_map();
 	int i = 0;
 	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
 		Node *_code;
@@ -71,7 +81,6 @@ void program() {
 	null_code = NULL;
 	vec_push(code_vec, (void *) null_code);
 
-	//code[i] = NULL;
 }
 
 
@@ -123,7 +132,8 @@ Node *term_vec() {
 
 
 	if (((Token *) tokens_vec->data[pos])->ty == TK_IDENT)
-		return new_node_ident( *(((Token *) tokens_vec->data[pos++])->input));
+		return new_node_ident(((Token *) tokens_vec->data[pos++])->name);
+		//return new_node_ident( *(((Token *) tokens_vec->data[pos++])->input));
 
 
 	fprintf(stderr, "This token is not NUM or open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
@@ -134,7 +144,8 @@ void gen_lval(Node *node) {
 	if (node->ty != ND_IDENT)
 		fprintf(stderr, "left value is not variable");
 
-	int offset = ('z' - node->name[0] + 1) * 8;
+	//int offset = ('z' - node->name[0] + 1) * 8;
+	int offset =( (int) map_get(variable_map, node->name) + 1) * 8;
 	printf("	mov rax, rbp\n");
 	printf("	sub rax, %d\n", offset);
 	printf("	push rax\n");
