@@ -1,7 +1,10 @@
+#ifndef H_TOKEN
+#define H_TOKEN
 #include<stdio.h>
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "map.h"
 
 
 enum {
@@ -22,3 +25,4 @@ typedef struct {
 
 void tokenize(char *p);
 void tokenize_vec(char *p);
+#endif

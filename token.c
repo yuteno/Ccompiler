@@ -1,9 +1,9 @@
 #include "token.h"
 #include "vector.h"
-
+#include "map.h"
 //Token tokens[100];
 Vector *tokens_vec;
-
+Map *variables;
 int pos = 0;
 /*
 void tokenize(char *p)
@@ -80,7 +80,7 @@ void tokenize_vec(char *p)
 				|| *p == ')'
 				|| *p == '='
 				|| *p == ';'
-				)
+		   )
 		{
 			token->ty = *p;
 			token->input = p;
@@ -90,9 +90,34 @@ void tokenize_vec(char *p)
 		}
 
 		if ('a' <= *p && *p <= 'z') {
+			int variable_len = 0;
+			for (int i = 0;;i++) {
+				if (p[i] == '+'
+						|| p[i] == '-'
+						|| p[i] == '*'
+						|| p[i] == '/'
+						|| p[i] == '('
+						|| p[i] == ')'
+						|| p[i] == '='
+						|| p[i] == ';'
+				   )
+				{
+					break;
+				}
+				variable_len++;
+			}
+			char* temp_token = (char *)malloc(variable_len * sizeof(char));
+			strncpy(temp_token, p, variable_len);
+
+			fprintf(stderr, "before: %s\n", p);
+			fprintf(stderr, "tokenize: %s\n", temp_token);
+			p += variable_len;
+			fprintf(stderr, "after: %s\n", p);
+
 			token->ty = TK_IDENT;
-			token->input = p;
-			p++;
+			//token->input = p;
+			token->input = temp_token;
+			//p++;
 			vec_push(tokens_vec, (void *) token);
 			continue;
 		}

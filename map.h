@@ -1,3 +1,5 @@
+#ifndef H_MAP
+#define H_MAP
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -14,4 +16,4 @@ Map *new_map();
 void map_put(Map *map, char *key, void *val);
 void *map_get(Map *map, char *key);
 void map_test();
-
+#endif

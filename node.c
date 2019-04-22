@@ -25,7 +25,7 @@ Node *new_node_num(int val) {
 	return node;
 }
 
-Node *new_node_ident(char name) {
+Node *new_node_ident(char *name) {
 	Node *node = malloc(sizeof(Node));
 	node->ty = ND_IDENT;
 	node->name = name;
@@ -134,7 +134,7 @@ void gen_lval(Node *node) {
 	if (node->ty != ND_IDENT)
 		fprintf(stderr, "left value is not variable");
 
-	int offset = ('z' - node->name + 1) * 8;
+	int offset = ('z' - node->name[0] + 1) * 8;
 	printf("	mov rax, rbp\n");
 	printf("	sub rax, %d\n", offset);
 	printf("	push rax\n");

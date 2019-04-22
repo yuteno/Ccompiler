@@ -15,12 +15,12 @@ typedef struct Node {
 	struct Node *lhs;
 	struct Node *rhs;
 	int val;
-	char name;
+	char *name;
 } Node;
 
 
 Node *new_node(int ty, Node *lhs, Node *rhs);
-Node *new_node_ident(char name);
+Node *new_node_ident(char *name);
 Node *new_node_num(int val);
 //int consume(int ty);
 int consume_vec(int ty);
