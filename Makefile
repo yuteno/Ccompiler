@@ -1,4 +1,4 @@
-9cc: 9cc.c node.c token.c util.c vector.c map.c
+9cc: 9cc.c node.c token.c util.c container.c
 
 test: 9cc
 	./9cc -test

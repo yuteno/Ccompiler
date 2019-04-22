@@ -1,6 +1,7 @@
 #include "token.h"
-#include "vector.h"
-#include "map.h"
+//#include "vector.h"
+//#include "map.h"
+#include "container.h"
 //Token tokens[100];
 Vector *tokens_vec;
 Map *variables;
