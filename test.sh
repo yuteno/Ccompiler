@@ -32,4 +32,6 @@ try 10 "foo = 5; bar = 2; return foo * bar;"
 try 15 "foo = 10; bar = 5; return foo + bar;"
 try 20 "foo = 40; bar = 2; return foo / bar;"
 try 10 "ax1 = 5; ax2 = 2; return ax1 * ax2;"
+try 10 "ax1 = -5; ax2 = -2; return ax1 * ax2;"
+try 2 "ax1 = -5; ax2 = 7; return ax1 + ax2;"
 echo OK
