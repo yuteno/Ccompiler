@@ -29,6 +29,38 @@ void tokenize_vec(char *p)
 			continue;
 		}
 
+		if (strncmp(p, "==", 2) == 0) {
+			token->ty = TK_EQUAL;
+			token->input = p;
+			p += 2;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		if (strncmp(p, "!=", 2) == 0) {
+			token->ty = TK_NEQUAL;
+			token->input = p;
+			p += 2;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		if (strncmp(p, ">=", 2) == 0) {
+			token->ty = TK_GEQUAL;
+			token->input = p;
+			p += 2;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
+		if (strncmp(p, "<=", 2) == 0) {
+			token->ty = TK_LEQUAL;
+			token->input = p;
+			p += 2;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
 		if (*p == '+'
 				|| *p == '-'
 				|| *p == '*'
@@ -37,6 +69,10 @@ void tokenize_vec(char *p)
 				|| *p == ')'
 				|| *p == '='
 				|| *p == ';'
+				|| *p == '<'
+				|| *p == '>'
+				|| *p == '&'
+				|| *p == '|'
 		   )
 		{
 			token->ty = *p;

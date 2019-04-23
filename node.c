@@ -44,7 +44,9 @@ Node *new_node_ident(char *name) {
 
 
 Node *assign() {
-	Node *node = add();
+	//Node *node = add();
+	//TODO
+	Node *node = comp();
 	while (consume('='))
 		node = new_node('=', node, assign());
 	return node;
@@ -91,6 +93,29 @@ int consume(int ty) {
 	pos++;
 	return 1;
 }
+
+
+Node *comp() {
+	Node *node = add();
+	for (;;) {
+		if (consume(TK_EQUAL))
+			node = new_node(ND_EQUAL, node, add());
+		else if (consume(TK_NEQUAL))
+			node = new_node(ND_NEQUAL, node, add());
+		else if (consume(TK_GEQUAL))
+			node = new_node(ND_GEQUAL, node, add());
+		else if (consume(TK_LEQUAL))
+			node = new_node(ND_LEQUAL, node, add());
+		else if (consume('<'))
+			node = new_node('<', node, add());
+		else if (consume('>'))
+			node = new_node('>', node, add());
+		else
+			return node;
+	}
+}
+
+
 
 Node *add() {
 	Node *node = mul();
@@ -215,6 +240,36 @@ void gen(Node *node) {
 		case '/':
 			printf("	mov rdx, 0\n");
 			printf("	div rdi\n");
+			break;
+		case '>':
+			printf("	cmp rdi, rax\n");
+			printf("	setl al\n");
+			printf("	movzb rax, al\n");
+			break;
+		case '<':
+			printf("	cmp rax, rdi\n");
+			printf("	setl al\n");
+			printf("	movzb rax, al\n");
+			break;
+		case ND_GEQUAL:
+			printf("	cmp rdi, rax\n");
+			printf("	setle al\n");
+			printf("	movzb rax, al\n");
+			break;
+		case ND_LEQUAL:
+			printf("	cmp rax, rdi\n");
+			printf("	setle al\n");
+			printf("	movzb rax, al\n");
+			break;
+		case ND_EQUAL:
+			printf("	cmp rdi, rax\n");
+			printf("	sete al\n");
+			printf("	movzb rax, al\n");
+			break;
+		case ND_NEQUAL:
+			printf("	cmp rdi, rax\n");
+			printf("	setne al\n");
+			printf("	movzb rax, al\n");
 	}
 	printf("	push rax\n");
 }

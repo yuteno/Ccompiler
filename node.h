@@ -6,8 +6,12 @@
 
 enum {
 	ND_NUM = 256,
+	ND_EQUAL,
+	ND_NEQUAL,
 	ND_RETURN,
 	ND_IDENT,
+	ND_GEQUAL,
+	ND_LEQUAL,
 };
 
 typedef struct Node {
@@ -30,6 +34,7 @@ Node *term();
 Node *assign();
 Node *stmt();
 Node *unary();
+Node *comp();
 void program();
 void gen_lval(Node *node);
 void gen(Node *node);

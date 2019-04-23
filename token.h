@@ -10,6 +10,10 @@
 enum {
 	TK_NUM = 256,
 	TK_IDENT,
+	TK_EQUAL,
+	TK_NEQUAL,
+	TK_GEQUAL,
+	TK_LEQUAL,
 	TK_RETURN,
 	TK_EOF,
 };
