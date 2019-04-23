@@ -26,6 +26,7 @@ typedef struct {
 	int val;
 	char *input;
 	char *name;
+	int arg_count;
 } Token;
 
 //extern Token tokens[100];

@@ -22,6 +22,7 @@ typedef struct Node {
 	struct Node *rhs;
 	int val;
 	char *name;
+	int arg_count;
 } Node;
 
 
@@ -29,6 +30,7 @@ Node *new_node(int ty, Node *lhs, Node *rhs);
 Node *new_node_ident(char *name);
 Node *new_node_num(int val);
 Node *new_node_function(char *name);
+Node *new_node_argument(int val, int arg_count);
 //int consume(int ty);
 int consume(int ty);
 Node *add();

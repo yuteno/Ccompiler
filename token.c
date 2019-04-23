@@ -63,7 +63,6 @@ void tokenize_vec(char *p)
 
 
 		if ('a' <= *p && *p <= 'z') {
-			int variable_len = 0;
 			char *dup_p = strdup(p);
 			//fprintf(stderr, "dup: %s\n", dup_p);
 			char *tp = strtok(dup_p, " /+/-/*/\//(/)/=/;/,");
@@ -82,12 +81,49 @@ void tokenize_vec(char *p)
 				token->ty = TK_FUNCTION;
 				token->name = tp;
 				p++;
-				//fprintf(stderr, "call function: %s\n", tp);
-				while(*p != ')') {
-					//TODO for supporting function with argument
-					Token *token_argument;
-					fprintf(stderr, "in: loop \n");
-					token_argument = malloc(sizeof(Token));
+				while (isspace(*p))
+					p++;
+
+
+				if (*p != ')') {
+					int arg_count = 0;
+					//fprintf(stderr, "call function: %s\n", tp);
+					dup_p = strdup(p);
+					dup_p = strtok(dup_p, ")");
+
+					//fprintf(stderr, "in: after cut dup_p: %s, len:%d,\n", dup_p, strlen(dup_p));
+					//fprintf(stderr, "in: before increment: %s\n", p);
+					p += strlen(dup_p);
+					//fprintf(stderr, "in: after increment: %s\n", p);
+
+					dup_p = strtok(dup_p,",");
+
+					Token *argument = malloc(sizeof(Token));
+					fprintf(stderr, "argument1 %s\n", dup_p);
+					argument->ty = TK_ARGUMENT;
+					//argument->input = dup_p;
+					argument->val = strtol(dup_p, &dup_p, 10);
+					fprintf(stderr, "argment1 val:%d\n", argument->val);
+					argument->input = dup_p;
+					argument->arg_count = arg_count;
+					vec_push(tokens_vec, argument);
+					arg_count++;
+
+
+					while (dup_p != NULL) {
+						dup_p = strtok(NULL, ",");
+						//fprintf(stderr, "end tokenize\n");
+						if (dup_p != NULL) {
+							Token *argument1 = malloc(sizeof(Token));
+							argument1->ty = TK_ARGUMENT;
+							//fprintf(stderr, "argument %s\n", dup_p);
+							argument1->val = strtol(dup_p, &dup_p, 10);
+							argument1->input = dup_p;
+							argument1->arg_count = arg_count;
+							vec_push(tokens_vec, argument1);
+							arg_count++;
+						}
+					}
 				}
 				p++;
 				//fprintf(stderr, "after tokenize: %s\n", p);
@@ -114,7 +150,7 @@ void tokenize_vec(char *p)
 				|| *p == '>'
 				|| *p == '&'
 				|| *p == '|'
-				)
+		   )
 		{
 			token->ty = *p;
 			token->input = p;

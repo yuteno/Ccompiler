@@ -38,32 +38,34 @@ try_function_call(){
 }
 
 
-try 0 '0;'
-try 42 '42;'
-try 21 '5+20-4;'
-try 41 " 12 + 34 -5;"
-try 47 "5+6*7;"
-try 15 "5*(9-6);"
-try 4 "(3+5)/2;"
-try 4 "a = b = 2;a+b;"
-try 10 "a=5;b=2;a*b;"
-try 100 "a=5;b=2;a * a * b * 2;"
-try 5 "return 5; return 4;"
-try 10 "a = 5; b = 2; return a * b;"
-try 10 "foo = 5; bar = 2; return foo * bar;"
-try 15 "foo = 10; bar = 5; return foo + bar;"
-try 20 "foo = 40; bar = 2; return foo / bar;"
-try 10 "ax1 = 5; ax2 = 2; return ax1 * ax2;"
-try 10 "ax1 = -5; ax2 = -2; return ax1 * ax2;"
-try 2 "ax1 = -5; ax2 = 7; return ax1 + ax2;"
-try 0 "ax1 = -5; ax2 = 7; return ax1 == ax2;"
-try 1 "ax1 = -5; ax2 = 7; return ax1 != ax2;"
-try 0 "ax1 = 7; ax2 = 7; return ax1 != ax2;"
-try 1 "ax1 = 7; ax2 = 7; return ax1 == ax2;"
-try 0 "ax1 = 7; ax2 = 6; return ax1 < ax2;"
-try 1 "ax1 = 7; ax2 = 7; return ax1 <= ax2;"
-try 1 "ax1 = 7; ax2 = 6; return ax1 > ax2;"
-try 0 "ax1 = 6; ax2 = 7; return ax1 >= ax2;"
-try_function_call func_sample.c "function foo OK" "foo();"
-try_function_call func_sample.c "function bar is called" "bar();"
+#try 0 '0;'
+#try 42 '42;'
+#try 21 '5+20-4;'
+#try 41 " 12 + 34 -5;"
+#try 47 "5+6*7;"
+#try 15 "5*(9-6);"
+#try 4 "(3+5)/2;"
+#try 4 "a = b = 2;a+b;"
+#try 10 "a=5;b=2;a*b;"
+#try 100 "a=5;b=2;a * a * b * 2;"
+#try 5 "return 5; return 4;"
+#try 10 "a = 5; b = 2; return a * b;"
+#try 10 "foo = 5; bar = 2; return foo * bar;"
+#try 15 "foo = 10; bar = 5; return foo + bar;"
+#try 20 "foo = 40; bar = 2; return foo / bar;"
+#try 10 "ax1 = 5; ax2 = 2; return ax1 * ax2;"
+#try 10 "ax1 = -5; ax2 = -2; return ax1 * ax2;"
+#try 2 "ax1 = -5; ax2 = 7; return ax1 + ax2;"
+#try 0 "ax1 = -5; ax2 = 7; return ax1 == ax2;"
+#try 1 "ax1 = -5; ax2 = 7; return ax1 != ax2;"
+#try 0 "ax1 = 7; ax2 = 7; return ax1 != ax2;"
+#try 1 "ax1 = 7; ax2 = 7; return ax1 == ax2;"
+#try 0 "ax1 = 7; ax2 = 6; return ax1 < ax2;"
+#try 1 "ax1 = 7; ax2 = 7; return ax1 <= ax2;"
+#try 1 "ax1 = 7; ax2 = 6; return ax1 > ax2;"
+#try 0 "ax1 = 6; ax2 = 7; return ax1 >= ax2;"
+#try_function_call func_sample.c "function foo OK" "foo() ;"
+#try_function_call func_sample.c "function bar is called" "bar() ;"
+try_function_call func_sample.c "function buzz is called, result: 7" "buzz(3, 4);"
+
 echo OK
