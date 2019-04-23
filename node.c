@@ -12,6 +12,30 @@ Vector *code_vec;
 Map *variable_map;
 int variable_count = 0;
 
+void program() {
+	code_vec = new_vector();
+	variable_map = new_map();
+	int i = 0;
+	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
+		Node *_code;
+		_code = malloc(sizeof(Node));
+		//code[i++] = stmt();
+		_code = stmt();
+		vec_push(code_vec, (void *) _code);
+	}
+	Node *null_code;
+	null_code = NULL;
+	vec_push(code_vec, (void *) null_code);
+
+}
+
+
+int consume(int ty) {
+	if ( ((Token *)(tokens_vec->data[pos]))->ty != ty )
+		return 0;
+	pos++;
+	return 1;
+}
 
 Node *new_node(int ty, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
@@ -43,9 +67,21 @@ Node *new_node_ident(char *name) {
 }
 
 
+Node *new_node_function(char *name) {
+	Node *node = malloc(sizeof(Node));
+	node->ty = ND_FUNCTION;
+	node->name = name;
+	//fprintf(stderr, "ident name: %s\n", name);
+	/*
+	if (map_get(variable_map, name) == NULL) {
+		variable_count++;
+		map_put(variable_map, name, variable_count);
+		//fprintf(stderr, "ident name: %s variable_count:%d\n", name, variable_count);
+	}
+	*/
+	return node;
+}
 Node *assign() {
-	//Node *node = add();
-	//TODO
 	Node *node = comp();
 	while (consume('='))
 		node = new_node('=', node, assign());
@@ -65,34 +101,10 @@ Node *stmt() {
 
 
 	if (!consume(';'))
-		fprintf(stderr, "this token is not ';': %s", ((Token *)(tokens_vec->data[pos]))->input);
+		fprintf(stderr, "this token is not ';': %s\n", ((Token *)(tokens_vec->data[pos]))->input);
 	return node;
 }
 
-void program() {
-	code_vec = new_vector();
-	variable_map = new_map();
-	int i = 0;
-	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
-		Node *_code;
-		_code = malloc(sizeof(Node));
-		//code[i++] = stmt();
-		_code = stmt();
-		vec_push(code_vec, (void *) _code);
-	}
-	Node *null_code;
-	null_code = NULL;
-	vec_push(code_vec, (void *) null_code);
-
-}
-
-
-int consume(int ty) {
-	if ( ((Token *)(tokens_vec->data[pos]))->ty != ty )
-		return 0;
-	pos++;
-	return 1;
-}
 
 
 Node *comp() {
@@ -163,19 +175,20 @@ Node *term() {
 	if (((Token *) tokens_vec->data[pos])->ty == TK_NUM)
 		return new_node_num(((Token *) tokens_vec->data[pos++])->val);
 
-
 	if (((Token *) tokens_vec->data[pos])->ty == TK_IDENT)
 		return new_node_ident(((Token *) tokens_vec->data[pos++])->name);
 	//return new_node_ident( *(((Token *) tokens_vec->data[pos++])->input));
+	if (((Token *) tokens_vec->data[pos])->ty == TK_FUNCTION)
+		return new_node_function(((Token *) tokens_vec->data[pos++])->name);
 
 
-	fprintf(stderr, "This token is not NUM or open bracket: %s", ((Token *) tokens_vec->data[pos])->input);
+	fprintf(stderr, "This token is not NUM or open bracket: %s\n", ((Token *) tokens_vec->data[pos])->input);
 }
 
 
 void gen_lval(Node *node) {
 	if (node->ty != ND_IDENT)
-		fprintf(stderr, "left value is not variable");
+		fprintf(stderr, "left value is not variable\n");
 
 	//int offset = ('z' - node->name[0] + 1) * 8;
 	int offset =( (int) map_get(variable_map, node->name) + 1) * 8;
@@ -197,6 +210,11 @@ void gen(Node *node) {
 
 	if (node->ty == ND_NUM) {
 		printf("	push %d\n", node->val);
+		return;
+	}
+
+	if (node->ty == ND_FUNCTION) {
+		printf("	call %s\n", node->name);
 		return;
 	}
 
@@ -273,5 +291,4 @@ void gen(Node *node) {
 	}
 	printf("	push rax\n");
 }
-
 

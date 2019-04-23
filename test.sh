@@ -16,6 +16,28 @@ try(){
 	fi
 }
 
+try_function_call(){
+	function_file="$1"
+	expected="$2"
+	input="$3"
+
+	./9cc "$input" > tmp.s
+	cc -c -o func_temp.o ${function_file}
+	as -o asemble_temp.o tmp.s
+	gcc -v -o 9cc_func_call asemble_temp.o func_temp.o &> /dev/null
+
+
+	actual=`./9cc_func_call`
+
+	if [ "$actual" = "$expected" ]; then
+		echo "$input => $actual"
+	else
+		echo "$expected expected, but got $actual"
+		exit 1
+	fi
+}
+
+
 try 0 '0;'
 try 42 '42;'
 try 21 '5+20-4;'
@@ -42,4 +64,6 @@ try 0 "ax1 = 7; ax2 = 6; return ax1 < ax2;"
 try 1 "ax1 = 7; ax2 = 7; return ax1 <= ax2;"
 try 1 "ax1 = 7; ax2 = 6; return ax1 > ax2;"
 try 0 "ax1 = 6; ax2 = 7; return ax1 >= ax2;"
+try_function_call func_sample.c "function foo OK" "foo();"
+try_function_call func_sample.c "function bar is called" "bar();"
 echo OK

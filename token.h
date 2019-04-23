@@ -15,6 +15,8 @@ enum {
 	TK_GEQUAL,
 	TK_LEQUAL,
 	TK_RETURN,
+	TK_FUNCTION,
+	TK_ARGUMENT,
 	TK_EOF,
 };
 

@@ -61,6 +61,47 @@ void tokenize_vec(char *p)
 			continue;
 		}
 
+
+		if ('a' <= *p && *p <= 'z') {
+			int variable_len = 0;
+			char *dup_p = strdup(p);
+			//fprintf(stderr, "dup: %s\n", dup_p);
+			char *tp = strtok(dup_p, " /+/-/*/\//(/)/=/;/,");
+			//fprintf(stderr, "tp: %s\n", tp);
+
+
+			//fprintf(stderr, "before: %s\n", p);
+			while (('a' <= *p && *p <= 'z') || isdigit(*p)) {
+				p++;
+			}
+
+			while (isspace(*p))
+				p++;
+
+			if (*p == '(') {
+				token->ty = TK_FUNCTION;
+				token->name = tp;
+				p++;
+				//fprintf(stderr, "call function: %s\n", tp);
+				while(*p != ')') {
+					//TODO for supporting function with argument
+					Token *token_argument;
+					fprintf(stderr, "in: loop \n");
+					token_argument = malloc(sizeof(Token));
+				}
+				p++;
+				//fprintf(stderr, "after tokenize: %s\n", p);
+			}
+			else {
+				//fprintf(stderr, "tokenize: %s\n", tp);
+				//fprintf(stderr, "after: %s\n", p);
+				token->ty = TK_IDENT;
+				token->name = tp;
+			}
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
 		if (*p == '+'
 				|| *p == '-'
 				|| *p == '*'
@@ -73,34 +114,11 @@ void tokenize_vec(char *p)
 				|| *p == '>'
 				|| *p == '&'
 				|| *p == '|'
-		   )
+				)
 		{
 			token->ty = *p;
 			token->input = p;
 			p++;
-			vec_push(tokens_vec, (void *) token);
-			continue;
-		}
-
-		if ('a' <= *p && *p <= 'z') {
-			int variable_len = 0;
-			char *dup_p = strdup(p);
-			//fprintf(stderr, "dup: %s\n", dup_p);
-			char *tp = strtok(dup_p, " /+/-/*/\//(/)/=/;");
-			//fprintf(stderr, "tp: %s\n", tp);
-
-
-			//fprintf(stderr, "before: %s\n", p);
-			while(('a' <= *p && *p <= 'z') || isdigit(*p)) {
-				p++;
-			}
-
-
-			//fprintf(stderr, "tokenize: %s\n", tp);
-			//fprintf(stderr, "after: %s\n", p);
-
-			token->ty = TK_IDENT;
-			token->name = tp;
 			vec_push(tokens_vec, (void *) token);
 			continue;
 		}
