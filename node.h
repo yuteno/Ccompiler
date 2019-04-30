@@ -25,6 +25,8 @@ typedef struct Node {
 	struct Node *rhs;
 	struct Node *condition;
 	struct Node *statement;
+	struct Node *initialize;
+	struct Node *control;
 	int val;
 	char *name;
 } Node;

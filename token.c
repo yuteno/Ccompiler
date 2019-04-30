@@ -45,10 +45,10 @@ void tokenize_vec(char *p)
 			continue;
 		}
 
-		if (strncmp(p, "for", 5) == 0) {
-			token->ty = TK_WHILE;
+		if (strncmp(p, "for", 3) == 0) {
+			token->ty = TK_FOR;
 			token->input = p;
-			p += 5;
+			p += 3;
 			vec_push(tokens_vec, (void *) token);
 			continue;
 		}
