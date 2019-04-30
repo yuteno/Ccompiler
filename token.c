@@ -138,6 +138,8 @@ void tokenize_vec(char *p)
 				|| *p == '>'
 				|| *p == '&'
 				|| *p == '|'
+				|| *p == '{'
+				|| *p == '}'
 				)
 		{
 			token->ty = *p;

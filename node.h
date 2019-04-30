@@ -1,7 +1,7 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include "container.h"
 
 
 enum {
@@ -13,6 +13,7 @@ enum {
 	ND_WHILE,
 	ND_RETURN,
 	ND_IDENT,
+	ND_BLOCK,
 	ND_GEQUAL,
 	ND_LEQUAL,
 	ND_FUNCTION,
@@ -27,6 +28,7 @@ typedef struct Node {
 	struct Node *statement;
 	struct Node *initialize;
 	struct Node *control;
+	Vector *block_contents;
 	int val;
 	char *name;
 } Node;
@@ -45,6 +47,7 @@ Node *assign();
 Node *stmt();
 Node *unary();
 Node *comp();
+Node *block_items();
 void program();
 void gen_lval(Node *node);
 void gen(Node *node);

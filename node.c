@@ -92,6 +92,15 @@ Node *assign() {
 
 Node *stmt() {
 	Node *node;
+	if (consume('{')) {
+		//fprintf(stderr, "now start block %s", ((Token *) tokens_vec->data[pos])->input);
+		//Node *node = add();
+		Node *node = block_items();
+		//fprintf(stderr, "now end  block %s", ((Token *) tokens_vec->data[pos])->input);
+		if (!consume('}'))
+			fprintf(stderr, "close brace should come after open brace: %s\n", ((Token *) tokens_vec->data[pos])->input);
+		return node;
+	}
 	if (consume(TK_RETURN)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_RETURN;
@@ -101,13 +110,13 @@ Node *stmt() {
 		node->ty = ND_IF;
 		node->condition = assign();
 		node->statement = stmt();
-		pos--;
+		return node;
 	} else if (consume(TK_WHILE)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_WHILE;
 		node->condition = assign();
 		node->statement = stmt();
-		pos--;
+		return node;
 	} else if (consume(TK_FOR)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_FOR;
@@ -119,7 +128,8 @@ Node *stmt() {
 		node->control = assign();
 		while (!consume(')'))
 			pos++;
-		node->statement = assign();
+		node->statement = stmt();
+		return node;
 	} else {
 		node = assign();
 	}
@@ -129,6 +139,20 @@ Node *stmt() {
 		fprintf(stderr, "this token is not ';': %s\n", ((Token *)(tokens_vec->data[pos]))->input);
 	return node;
 }
+
+Node *block_items() {
+	Node *node;
+	node = malloc(sizeof(Node));
+	node->ty = ND_BLOCK;
+	node->block_contents = new_vector();
+	while (!consume('}')) {
+		Node *new_node = stmt();
+		vec_push(node->block_contents, new_node);
+	}
+	pos--;
+	return node;
+}
+
 
 
 
@@ -269,6 +293,13 @@ void gen(Node *node) {
 		printf("	jmp .Lbegin%04d\n", loop_count);
 		printf(".Lend%04d:\n", loop_count);
 		loop_count++;
+		return;
+	}
+
+	if (node->ty == ND_BLOCK) {
+		int i_;
+		for (i_ = 0; i_ < node->block_contents->len; i_++)
+			gen(node->block_contents->data[i_]);
 		return;
 	}
 
