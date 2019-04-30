@@ -8,6 +8,8 @@ enum {
 	ND_NUM = 256,
 	ND_EQUAL,
 	ND_NEQUAL,
+	ND_IF,
+	ND_FOR,
 	ND_RETURN,
 	ND_IDENT,
 	ND_GEQUAL,
@@ -20,6 +22,8 @@ typedef struct Node {
 	int ty;
 	struct Node *lhs;
 	struct Node *rhs;
+	struct Node *condition;
+	struct Node *statement;
 	int val;
 	char *name;
 } Node;

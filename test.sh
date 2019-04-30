@@ -66,4 +66,7 @@ try 1 "ax1 = 7; ax2 = 6; return ax1 > ax2;"
 try 0 "ax1 = 6; ax2 = 7; return ax1 >= ax2;"
 try_function_call func_sample.c "function foo OK" "foo();"
 try_function_call func_sample.c "function bar is called" "bar();"
+try 9 "a=1; if(a) return 4 + 5; x = 10; return x;"
+try 10 "a=0; if(a) return 5; x = 10; return x;"
+try 5 "a=5; if(a >= 4) return 5; x = 10; return x;"
 echo OK

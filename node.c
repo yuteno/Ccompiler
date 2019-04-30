@@ -11,6 +11,7 @@ extern int pos;
 Vector *code_vec;
 Map *variable_map;
 int variable_count = 0;
+int loop_count = 0;
 
 void program() {
 	code_vec = new_vector();
@@ -95,6 +96,11 @@ Node *stmt() {
 		node = malloc(sizeof(Node));
 		node->ty = ND_RETURN;
 		node->lhs = assign();
+	} else if (consume(TK_IF)) {
+		node = malloc(sizeof(Node));
+		node->ty = ND_IF;
+		node->condition = assign();
+		node->statement = stmt();
 	} else {
 		node = assign();
 	}
@@ -205,6 +211,17 @@ void gen(Node *node) {
 		printf("	mov rsp, rbp\n");
 		printf("	pop rbp\n");
 		printf("	ret\n");
+		return;
+	}
+
+	if (node->ty == ND_IF) {
+		gen(node->condition);
+		printf("	pop rax\n");
+		printf("	cmp rax, 0\n");
+		printf("	je .Lend%04d\n", loop_count);
+		gen(node->statement);
+		printf(".Lend%04d:\n", loop_count);
+		loop_count++;
 		return;
 	}
 

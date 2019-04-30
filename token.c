@@ -29,6 +29,14 @@ void tokenize_vec(char *p)
 			continue;
 		}
 
+		if (strncmp(p, "if", 2) == 0) {
+			token->ty = TK_IF;
+			token->input = p;
+			p += 2;
+			vec_push(tokens_vec, (void *) token);
+			continue;
+		}
+
 		if (strncmp(p, "==", 2) == 0) {
 			token->ty = TK_EQUAL;
 			token->input = p;
