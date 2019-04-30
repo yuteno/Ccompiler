@@ -69,4 +69,5 @@ try_function_call func_sample.c "function bar is called" "bar();"
 try 9 "a=1; if(a) return 4 + 5; x = 10; return x;"
 try 10 "a=0; if(a) return 5; x = 10; return x;"
 try 5 "a=5; if(a >= 4) return 5; x = 10; return x;"
+try 0 "a = 5; while(a != 0) a = a - 1; return a;"
 echo OK

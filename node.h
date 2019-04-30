@@ -10,6 +10,7 @@ enum {
 	ND_NEQUAL,
 	ND_IF,
 	ND_FOR,
+	ND_WHILE,
 	ND_RETURN,
 	ND_IDENT,
 	ND_GEQUAL,

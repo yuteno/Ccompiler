@@ -101,6 +101,11 @@ Node *stmt() {
 		node->ty = ND_IF;
 		node->condition = assign();
 		node->statement = stmt();
+	} else if (consume(TK_WHILE)) {
+		node = malloc(sizeof(Node));
+		node->ty = ND_WHILE;
+		node->condition = assign();
+		node->statement = stmt();
 	} else {
 		node = assign();
 	}
@@ -220,6 +225,19 @@ void gen(Node *node) {
 		printf("	cmp rax, 0\n");
 		printf("	je .Lend%04d\n", loop_count);
 		gen(node->statement);
+		printf(".Lend%04d:\n", loop_count);
+		loop_count++;
+		return;
+	}
+
+	if (node->ty == ND_WHILE) {
+		printf(".Lbegin%04d:\n", loop_count);
+		gen(node->condition);
+		printf("	pop rax\n");
+		printf("	cmp rax, 0\n");
+		printf("	je .Lend%04d\n", loop_count);
+		gen(node->statement);
+		printf("	jmp .Lbegin%04d\n", loop_count);
 		printf(".Lend%04d:\n", loop_count);
 		loop_count++;
 		return;
