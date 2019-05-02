@@ -29,6 +29,7 @@ typedef struct Node {
 	struct Node *initialize;
 	struct Node *control;
 	Vector *block_contents;
+	Vector *arguments;
 	int val;
 	char *name;
 	int arg_count;

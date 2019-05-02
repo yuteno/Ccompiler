@@ -104,6 +104,7 @@ void tokenize_vec(char *p)
 			if (*p == '(') {
 				token->ty = TK_FUNCTION;
 				token->name = tp;
+				vec_push(tokens_vec, (void *) token);
 				p++;
 				while (isspace(*p))
 					p++;
@@ -123,11 +124,13 @@ void tokenize_vec(char *p)
 					dup_p = strtok(dup_p,",");
 
 					Token *argument = malloc(sizeof(Token));
-					fprintf(stderr, "argument1 %s\n", dup_p);
-					argument->ty = TK_ARGUMENT;
+					//fprintf(stderr, "argument1 %s\n", dup_p);
+					//TODO check TK_ARGUMENT_NUM or TK_ARGUMENT_IDENT
+					//now support only TK_ARGUMENT_NUM
+					argument->ty = TK_ARGUMENT_NUM;
 					//argument->input = dup_p;
 					argument->val = strtol(dup_p, &dup_p, 10);
-					fprintf(stderr, "argment1 val:%d\n", argument->val);
+					//fprintf(stderr, "argment1 val:%d\n", argument->val);
 					argument->input = dup_p;
 					argument->arg_count = arg_count;
 					vec_push(tokens_vec, argument);
@@ -139,7 +142,7 @@ void tokenize_vec(char *p)
 						//fprintf(stderr, "end tokenize\n");
 						if (dup_p != NULL) {
 							Token *argument1 = malloc(sizeof(Token));
-							argument1->ty = TK_ARGUMENT;
+							argument1->ty = TK_ARGUMENT_NUM;
 							//fprintf(stderr, "argument %s\n", dup_p);
 							argument1->val = strtol(dup_p, &dup_p, 10);
 							argument1->input = dup_p;
@@ -157,8 +160,8 @@ void tokenize_vec(char *p)
 				//fprintf(stderr, "after: %s\n", p);
 				token->ty = TK_IDENT;
 				token->name = tp;
+				vec_push(tokens_vec, (void *) token);
 			}
-			vec_push(tokens_vec, (void *) token);
 			continue;
 		}
 

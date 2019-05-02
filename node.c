@@ -5,7 +5,8 @@
 //#include "map.h"
 #include "container.h"
 
-//extern Token tokens[100];
+
+
 extern Vector *tokens_vec;
 extern int pos;
 Vector *code_vec;
@@ -72,25 +73,23 @@ Node *new_node_function(char *name) {
 	Node *node = malloc(sizeof(Node));
 	node->ty = ND_FUNCTION;
 	node->name = name;
-	//fprintf(stderr, "ident name: %s\n", name);
-	/*
-	if (map_get(variable_map, name) == NULL) {
-		variable_count++;
-		map_put(variable_map, name, variable_count);
-		//fprintf(stderr, "ident name: %s variable_count:%d\n", name, variable_count);
+	node->arguments = new_vector();
+	//fprintf(stderr, "new_node_func -1 ty:%d\n", ((Token *)tokens_vec->data[pos-1])->ty);
+	//fprintf(stderr, "new_node_func ty:%d\n", ((Token *)tokens_vec->data[pos])->ty);
+	while (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_NUM || ((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT) {
+		Node *argument = malloc(sizeof(Node));
+		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_NUM)
+			argument = new_node_num(((Token *) tokens_vec->data[pos++])->val);
+		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT)
+			argument = new_node_ident(((Token *) tokens_vec->data[pos++])->name);
+
+		vec_push(node->arguments, argument);
+
 	}
-	*/
+
 	return node;
 }
 
-Node *new_node_argument(int val, int arg_count) {
-	Node *node = malloc(sizeof(Node));
-	node->ty = ND_ARGUMENT;
-	node->val = val;
-	node->arg_count = arg_count;
-	fprintf(stderr, "argument node val:%d\n", val);
-	return node;
-}
 
 Node *assign() {
 	Node *node = comp();
@@ -241,9 +240,6 @@ Node *term() {
 	if (((Token *) tokens_vec->data[pos])->ty == TK_FUNCTION)
 		return new_node_function(((Token *) tokens_vec->data[pos++])->name);
 
-	if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT)
-		return new_node_argument(((Token *) tokens_vec->data[pos++])->val, ((Token *) tokens_vec->data[pos++])->arg_count);
-
 
 	fprintf(stderr, "This token is not NUM or open bracket: %s\n", ((Token *) tokens_vec->data[pos])->input);
 }
@@ -323,39 +319,48 @@ void gen(Node *node) {
 		return;
 	}
 
-	if (node->ty == ND_ARGUMENT) {
-		char *reg_name = malloc(sizeof(char) * 10);
-		switch (node->arg_count) {
-			case 0:
-				reg_name = "rdi";
-				break;
-			case 1:
-				reg_name = "rsi";
-				break;
-			case 2:
-				reg_name = "rdx";
-				break;
-			case 3:
-				reg_name = "rcx";
-				break;
-			case 4:
-				reg_name = "r8";
-				break;
-			case 5:
-				reg_name = "r9";
-				break;
-			default:
-				//TODO support over seven arguments
-				break;
-		}
-
-		//fprintf(stderr, "mov rbp %d\n", node->val);
-		//printf("	push rbp %d\n", node->val);
-		printf("	mov %s, %d\n", reg_name, node->val);
-		return;
-	}
 
 	if (node->ty == ND_FUNCTION) {
+		int arg_count;
+		//fprintf(stderr, "ND_FUNC\n");
+		//fprintf(stderr, "argument len: %d\n", node->arguments->len);
+		for (arg_count = 0; arg_count < node->arguments->len; arg_count++) {
+			gen(node->arguments->data[arg_count]);
+			//TODO evaluate and pop from rax to rdi, rsi, rdx, ...
+			//fprintf(stderr, "argument %d\n", ((Node *)node->arguments->data[arg_count])->val);
+
+		}
+
+		for (arg_count = node->arguments->len - 1; arg_count >= 0; arg_count--) {
+			char *reg_name = malloc(sizeof(char) * 10);
+			switch (arg_count) {
+				case 0:
+					reg_name = "rdi";
+					break;
+				case 1:
+					reg_name = "rsi";
+					break;
+				case 2:
+					reg_name = "rdx";
+					break;
+				case 3:
+					reg_name = "rcx";
+					break;
+				case 4:
+					reg_name = "r8";
+					break;
+				case 5:
+					reg_name = "r9";
+					break;
+				default:
+					//TODO support over seven arguments
+					break;
+			}
+
+			//fprintf(stderr, "mov rbp %d\n", node->val);
+			//printf("	push rbp %d\n", node->val);
+			printf("	pop %s\n", reg_name);
+		}
 		printf("	call %s\n", node->name);
 		return;
 	}
