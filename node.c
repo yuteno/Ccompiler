@@ -80,8 +80,11 @@ Node *new_node_function(char *name) {
 		Node *argument = malloc(sizeof(Node));
 		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_NUM)
 			argument = new_node_num(((Token *) tokens_vec->data[pos++])->val);
-		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT)
+		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT) {
+			//fprintf(stderr, "new_node_func ty == TK_ARGUMENT_IDENT\n");
 			argument = new_node_ident(((Token *) tokens_vec->data[pos++])->name);
+			//fprintf(stderr, "end TK_ARGUMENT_IDENT\n");
+		}
 
 		vec_push(node->arguments, argument);
 
@@ -321,6 +324,7 @@ void gen(Node *node) {
 
 
 	if (node->ty == ND_FUNCTION) {
+		//fprintf(stderr, "ND_FUNC gen\n");
 		int arg_count;
 		//fprintf(stderr, "ND_FUNC\n");
 		//fprintf(stderr, "argument len: %d\n", node->arguments->len);

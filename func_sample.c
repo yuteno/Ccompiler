@@ -13,3 +13,7 @@ int buzz (int x, int y) {
 	printf("function buzz is called, result: %d\n", x + y);
 }
 
+
+int buzz3 (int x, int y, int z) {
+	printf("function buzz3 is called, result: %d\n", x + y + z);
+}

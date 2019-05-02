@@ -8,6 +8,8 @@ Map *variables;
 int pos = 0;
 
 
+
+
 void tokenize_vec(char *p)
 {
 	tokens_vec = new_vector();
@@ -111,25 +113,31 @@ void tokenize_vec(char *p)
 
 
 				if (*p != ')') {
+					Token *argument = malloc(sizeof(Token));
 					int arg_count = 0;
 					//fprintf(stderr, "call function: %s\n", tp);
 					dup_p = strdup(p);
 					dup_p = strtok(dup_p, ")");
-
-					//fprintf(stderr, "in: after cut dup_p: %s, len:%d,\n", dup_p, strlen(dup_p));
-					//fprintf(stderr, "in: before increment: %s\n", p);
 					p += strlen(dup_p);
-					//fprintf(stderr, "in: after increment: %s\n", p);
 
-					dup_p = strtok(dup_p,",");
+					dup_p = strtok(dup_p," ,");
 
-					Token *argument = malloc(sizeof(Token));
 					//fprintf(stderr, "argument1 %s\n", dup_p);
 					//TODO check TK_ARGUMENT_NUM or TK_ARGUMENT_IDENT
 					//now support only TK_ARGUMENT_NUM
-					argument->ty = TK_ARGUMENT_NUM;
-					//argument->input = dup_p;
-					argument->val = strtol(dup_p, &dup_p, 10);
+					if (isdigit(*dup_p)) {
+						//fprintf(stderr, "digit OK %s\n");
+						argument->ty = TK_ARGUMENT_NUM;
+						argument->val = strtol(dup_p, &dup_p, 10);
+					}
+					else {
+						//fprintf(stderr, "IDENT OK %s\n");
+						argument->ty = TK_ARGUMENT_IDENT;
+						argument->name = dup_p;
+						//fprintf(stderr, "dup_p: %s\n", dup_p);
+					}
+
+
 					//fprintf(stderr, "argment1 val:%d\n", argument->val);
 					argument->input = dup_p;
 					argument->arg_count = arg_count;
@@ -138,17 +146,22 @@ void tokenize_vec(char *p)
 
 
 					while (dup_p != NULL) {
-						dup_p = strtok(NULL, ",");
-						//fprintf(stderr, "end tokenize\n");
+						dup_p = strtok(NULL, " ,");
+						//fprintf(stderr, "dup_p:%s\n", dup_p);
+						Token *argument1 = malloc(sizeof(Token));
 						if (dup_p != NULL) {
-							Token *argument1 = malloc(sizeof(Token));
-							argument1->ty = TK_ARGUMENT_NUM;
-							//fprintf(stderr, "argument %s\n", dup_p);
-							argument1->val = strtol(dup_p, &dup_p, 10);
+							if (isdigit(*dup_p)) {
+								argument1->ty = TK_ARGUMENT_NUM;
+								argument1->val = strtol(dup_p, &dup_p, 10);
+							} else {
+								argument1->ty = TK_ARGUMENT_IDENT;
+								argument1->name = dup_p;
+							}
 							argument1->input = dup_p;
 							argument1->arg_count = arg_count;
 							vec_push(tokens_vec, argument1);
 							arg_count++;
+							//fprintf(stderr, "argument1 push OK %s\n", dup_p);
 						}
 					}
 				}
