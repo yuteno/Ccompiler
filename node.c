@@ -10,24 +10,31 @@
 extern Vector *tokens_vec;
 extern int pos;
 Vector *code_vec;
+Vector *func_definitions;
 Map *variable_map;
 int variable_count = 0;
 int loop_count = 0;
 
 void program() {
 	code_vec = new_vector();
+	func_definitions = new_vector();
 	variable_map = new_map();
 	int i = 0;
 	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
 		Node *_code;
 		_code = malloc(sizeof(Node));
-		//code[i++] = stmt();
-		_code = stmt();
-		vec_push(code_vec, (void *) _code);
+		if (((Token *)(tokens_vec->data[pos]))->ty != TK_FUNCTION_DEF) {
+			_code = stmt();
+			vec_push(code_vec, (void *) _code);
+		} else {
+			_code = stmt();
+			vec_push(func_definitions, (void *) _code);
+		}
 	}
 	Node *null_code;
 	null_code = NULL;
 	vec_push(code_vec, (void *) null_code);
+	vec_push(func_definitions, (void *) null_code);
 
 }
 
@@ -76,19 +83,44 @@ Node *new_node_function(char *name) {
 	node->arguments = new_vector();
 	//fprintf(stderr, "new_node_func -1 ty:%d\n", ((Token *)tokens_vec->data[pos-1])->ty);
 	//fprintf(stderr, "new_node_func ty:%d\n", ((Token *)tokens_vec->data[pos])->ty);
+	int arg_count = 0;
 	while (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_NUM || ((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT) {
 		Node *argument = malloc(sizeof(Node));
 		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_NUM)
 			argument = new_node_num(((Token *) tokens_vec->data[pos++])->val);
+
 		if (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT) {
 			//fprintf(stderr, "new_node_func ty == TK_ARGUMENT_IDENT\n");
 			argument = new_node_ident(((Token *) tokens_vec->data[pos++])->name);
 			//fprintf(stderr, "end TK_ARGUMENT_IDENT\n");
 		}
-
+		arg_count++;
 		vec_push(node->arguments, argument);
 
 	}
+	node->arg_count = arg_count;
+
+	return node;
+}
+
+Node *new_node_function_def(char *name) {
+	Node *node = malloc(sizeof(Node));
+	node->ty = ND_FUNCTION_DEF;
+	node->name = name;
+	node->arguments = new_vector();
+	//fprintf(stderr, "new_node_func -1 ty:%d\n", ((Token *)tokens_vec->data[pos-1])->ty);
+	//fprintf(stderr, "new_node_func ty:%d\n", ((Token *)tokens_vec->data[pos])->ty);
+	int arg_count = 0;
+	while (((Token *) tokens_vec->data[pos])->ty == TK_ARGUMENT_IDENT) {
+		Node *argument = malloc(sizeof(Node));
+		//fprintf(stderr, "new_node_func ty == TK_ARGUMENT_IDENT\n");
+		argument = new_node_ident(((Token *) tokens_vec->data[pos++])->name);
+		//fprintf(stderr, "end TK_ARGUMENT_IDENT\n");
+		vec_push(node->arguments, argument);
+		arg_count++;
+	}
+	node->arg_count = arg_count;
+	node->definition = stmt();
 
 	return node;
 }
@@ -117,18 +149,21 @@ Node *stmt() {
 		node = malloc(sizeof(Node));
 		node->ty = ND_RETURN;
 		node->lhs = assign();
+
 	} else if (consume(TK_IF)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_IF;
 		node->condition = assign();
 		node->statement = stmt();
 		return node;
+
 	} else if (consume(TK_WHILE)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_WHILE;
 		node->condition = assign();
 		node->statement = stmt();
 		return node;
+
 	} else if (consume(TK_FOR)) {
 		node = malloc(sizeof(Node));
 		node->ty = ND_FOR;
@@ -142,6 +177,11 @@ Node *stmt() {
 			pos++;
 		node->statement = stmt();
 		return node;
+
+	} else if (((Token *)(tokens_vec->data[pos]))->ty == TK_FUNCTION_DEF) {
+		node = new_node_function_def(((Token *) tokens_vec->data[pos++])->name);
+		return node;
+
 	} else {
 		node = assign();
 	}
@@ -248,6 +288,54 @@ Node *term() {
 }
 
 
+void gen_definition(Node *node) {
+	printf("\n");
+	printf("%s:\n", node->name);
+	//TODO argument supporting
+	if (strncmp(node->name, "main", 4) == 0) {
+		printf("	push rbp\n");
+		printf("	mov rbp, rsp\n");
+		printf("	sub rsp, %d\n", 8*26);
+	} else {
+		printf("	push rbp\n");
+		printf("	mov rbp, rsp\n");
+		printf("	sub rsp, %d\n", node->arg_count * 8);
+		for (int i = 0; i < node->arg_count; i++) {
+			char *reg_name = malloc(sizeof(char) * 10);
+			switch (i) {
+				case 0:
+					reg_name = "rdi";
+					break;
+				case 1:
+					reg_name = "rsi";
+					break;
+				case 2:
+					reg_name = "rdx";
+					break;
+				case 3:
+					reg_name = "rcx";
+					break;
+				case 4:
+					reg_name = "r8";
+					break;
+				case 5:
+					reg_name = "r9";
+					break;
+				default:
+					//TODO support over seven arguments
+					break;
+			}
+
+			printf("	mov [rbp-%d], %s\n", (i + 1) * 8, reg_name);
+		}
+	}
+
+	gen(node->definition);
+
+
+}
+
+
 void gen_lval(Node *node) {
 	if (node->ty != ND_IDENT)
 		fprintf(stderr, "left value is not variable\n");
@@ -261,6 +349,7 @@ void gen_lval(Node *node) {
 
 
 void gen(Node *node) {
+
 	if (node->ty == ND_RETURN) {
 		gen(node->lhs);
 		printf("	pop rax\n");

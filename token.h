@@ -1,9 +1,9 @@
 #ifndef H_TOKEN
 #define H_TOKEN
 #include<stdio.h>
+#include <string.h>
 #include<stdlib.h>
 #include <ctype.h>
-#include <string.h>
 #include "container.h"
 
 
@@ -19,6 +19,7 @@ enum {
 	TK_FOR,
 	TK_WHILE,
 	TK_FUNCTION,
+	TK_FUNCTION_DEF,
 	TK_ARGUMENT_NUM,
 	TK_ARGUMENT_IDENT,
 	TK_EOF,

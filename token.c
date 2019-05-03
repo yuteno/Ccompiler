@@ -112,13 +112,15 @@ void tokenize_vec(char *p)
 					p++;
 
 
+				int arg_count = 0;
 				if (*p != ')') {
+					//with arguments
 					Token *argument = malloc(sizeof(Token));
-					int arg_count = 0;
 					//fprintf(stderr, "call function: %s\n", tp);
 					dup_p = strdup(p);
 					dup_p = strtok(dup_p, ")");
-					p += strlen(dup_p);
+					p += strlen(dup_p) + 1;
+					//fprintf(stderr, "after strlen: %s\n", p);
 
 					dup_p = strtok(dup_p," ,");
 
@@ -164,8 +166,18 @@ void tokenize_vec(char *p)
 							//fprintf(stderr, "argument1 push OK %s\n", dup_p);
 						}
 					}
+				} else {
+					//without arguments
+					p++;
 				}
-				p++;
+				while(isspace(*p))
+					p++;
+
+				if (*p == '{') {
+					((Token *)tokens_vec->data[tokens_vec->len-1 - arg_count])->ty = TK_FUNCTION_DEF;
+					//fprintf(stderr, "after tokenize: %s\n", p);
+				}
+
 				//fprintf(stderr, "after tokenize: %s\n", p);
 			}
 			else {
@@ -219,4 +231,5 @@ void tokenize_vec(char *p)
 	eof_token->input = p;
 	vec_push(tokens_vec, (void *)eof_token);
 }
+
 

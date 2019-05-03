@@ -12,6 +12,7 @@
 //extern Token tokens[100];
 extern Vector *tokens_vec;
 extern Vector *code_vec;
+extern Vector *func_definitions;
 //extern int pos;
 
 
@@ -41,11 +42,8 @@ int main(int argc, char **argv)
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
-	printf("main:\n");
+	//printf("main:\n");
 
-	printf("	push rbp\n");
-	printf("	mov rbp, rsp\n");
-	printf("	sub rsp, %d\n", 8*26);
 
 	//for (int i = 0; code[i]; i++) {
 	for (int i = 0; (Node *)code_vec->data[i]; i++) {
@@ -54,12 +52,12 @@ int main(int argc, char **argv)
 	//gen(node);
 		printf("	pop rax\n");
 	}
-	printf("	mov rsp, rbp\n");
-	printf("	pop rbp\n");
-	printf("	ret\n");
+	//printf("	mov rsp, rbp\n");
+	//printf("	pop rbp\n");
+	//printf("	ret\n");
+	for (int i = 0; (Node *)func_definitions->data[i]; i++) {
+		gen_definition((Node *)func_definitions->data[i]);
+	}
 	return 0;
 }
-
-
-
 
