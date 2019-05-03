@@ -12,13 +12,13 @@ extern int pos;
 Vector *code_vec;
 Vector *func_definitions;
 Map *variable_map;
-int variable_count = 0;
+int *variable_count;
 int loop_count = 0;
 
 void program() {
 	code_vec = new_vector();
 	func_definitions = new_vector();
-	variable_map = new_map();
+	//variable_map = new_map();
 	int i = 0;
 	while (((Token *)(tokens_vec->data[pos]))->ty != TK_EOF) {
 		Node *_code;
@@ -68,8 +68,8 @@ Node *new_node_ident(char *name) {
 	node->name = name;
 	//fprintf(stderr, "ident name: %s\n", name);
 	if (map_get(variable_map, name) == NULL) {
-		variable_count++;
-		map_put(variable_map, name, variable_count);
+		*variable_count += 1;
+		map_put(variable_map, name, *variable_count);
 		//fprintf(stderr, "ident name: %s variable_count:%d\n", name, variable_count);
 	}
 	return node;
@@ -108,6 +108,12 @@ Node *new_node_function_def(char *name) {
 	node->ty = ND_FUNCTION_DEF;
 	node->name = name;
 	node->arguments = new_vector();
+	node->local_variable_map = new_map();
+	node->local_variable_count = malloc(sizeof(int));
+	*(node->local_variable_count) = 0;
+	//fprintf(stderr, "fucntion name %s map renew\n", node->name);
+	variable_map = node->local_variable_map;
+	variable_count = node->local_variable_count;
 	//fprintf(stderr, "new_node_func -1 ty:%d\n", ((Token *)tokens_vec->data[pos-1])->ty);
 	//fprintf(stderr, "new_node_func ty:%d\n", ((Token *)tokens_vec->data[pos])->ty);
 	int arg_count = 0;
@@ -121,6 +127,7 @@ Node *new_node_function_def(char *name) {
 	}
 	node->arg_count = arg_count;
 	node->definition = stmt();
+	//fprintf(stderr, "function %s map len %d\n", node->name, variable_map->keys->len);
 
 	return node;
 }
@@ -289,17 +296,20 @@ Node *term() {
 
 
 void gen_definition(Node *node) {
+	variable_map = node->local_variable_map;
+	variable_count = node->local_variable_count;
+	//fprintf(stderr, "generating input definition %s \n", node->name);
 	printf("\n");
 	printf("%s:\n", node->name);
 	//TODO argument supporting
+	printf("	push rbp\n");
+	printf("	mov rbp, rsp\n");
+	printf("	sub rsp, %d\n", 32*26);
 	if (strncmp(node->name, "main", 4) == 0) {
-		printf("	push rbp\n");
-		printf("	mov rbp, rsp\n");
-		printf("	sub rsp, %d\n", 8*26);
 	} else {
-		printf("	push rbp\n");
-		printf("	mov rbp, rsp\n");
-		printf("	sub rsp, %d\n", node->arg_count * 8);
+		//printf("	push rbp\n");
+		//	printf("	mov rbp, rsp\n");
+		//	printf("	sub rsp, %d\n", node->arg_count * 8);
 		for (int i = 0; i < node->arg_count; i++) {
 			char *reg_name = malloc(sizeof(char) * 10);
 			switch (i) {
@@ -325,23 +335,22 @@ void gen_definition(Node *node) {
 					//TODO support over seven arguments
 					break;
 			}
-
-			printf("	mov [rbp-%d], %s\n", (i + 1) * 8, reg_name);
+			printf("	mov [rbp-%d], %s\n", (i + 1) * 32, reg_name);
 		}
 	}
 
 	gen(node->definition);
-
-
 }
 
 
 void gen_lval(Node *node) {
+	//fprintf(stderr, "generating lval input %s \n", node->name);
 	if (node->ty != ND_IDENT)
 		fprintf(stderr, "left value is not variable\n");
 
 	//int offset = ('z' - node->name[0] + 1) * 8;
-	int offset =( (int) map_get(variable_map, node->name) + 1) * 8;
+	int offset =( (int) map_get(variable_map, node->name)) * 32;
+	fprintf(stderr, "node name %s offset %d\n", node->name, offset);
 	printf("	mov rax, rbp\n");
 	printf("	sub rax, %d\n", offset);
 	printf("	push rax\n");
@@ -349,6 +358,8 @@ void gen_lval(Node *node) {
 
 
 void gen(Node *node) {
+	//fprintf(stderr, "generating input %d \n", node->ty);
+
 
 	if (node->ty == ND_RETURN) {
 		gen(node->lhs);
@@ -449,6 +460,8 @@ void gen(Node *node) {
 			printf("	pop %s\n", reg_name);
 		}
 		printf("	call %s\n", node->name);
+		//TODO? next line is needed?
+		printf("	push rax\n");
 		return;
 	}
 

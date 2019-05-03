@@ -11,9 +11,9 @@ enum {
 	ND_IF,
 	ND_FOR,
 	ND_WHILE,
-	ND_RETURN,
-	ND_IDENT,
-	ND_BLOCK,
+	ND_RETURN, //262
+	ND_IDENT, //263
+	ND_BLOCK, //264
 	ND_GEQUAL,
 	ND_LEQUAL,
 	ND_FUNCTION,
@@ -32,6 +32,8 @@ typedef struct Node {
 	struct Node *control;
 	Vector *block_contents;
 	Vector *arguments;
+	Map *local_variable_map;
+	int *local_variable_count;
 	int val;
 	char *name;
 	int arg_count;

@@ -148,12 +148,83 @@ try 10 "main(){
 	}
 	return a;
 }"
-try_function_call func_sample.c "function buzz is called, result: 7" "main(){buzz(3, 4);}"
-try_function_call func_sample.c "function buzz3 is called, result: 13" "buzz3(3, 4, 6);"
-try_function_call func_sample.c "function buzz3 is called, result: 13" "buzz3(3,4,6);"
-try_function_call func_sample.c "function buzz3 is called, result: 13" "xx = 3; yy = 4; zz = 6;  buzz3(xx, yy, zz);"
-try_function_call func_sample.c "function buzz is called, result: 7" "x = 3; y = 4; buzz(x, 4);"
-try 10 "a = 5; for ( i = 0; i < 5; i = i + 1)  {a = a + 1;} return a;"
+try_function_call func_sample.c "function buzz is called, result: 7" "main(){buzz(3, 4); return 0;}"
+try_function_call func_sample.c "function buzz3 is called, result: 13" "main(){buzz3(3, 4, 6); return 0;}"
+try_function_call func_sample.c "function buzz3 is called, result: 13" "main(){buzz3(3,4,6); return 0;}"
+try_function_call func_sample.c "function buzz3 is called, result: 13" "main(){xx = 3; yy = 4; zz = 6;  buzz3(xx, yy, zz); return 0;}"
+try_function_call func_sample.c "function buzz is called, result: 7" "main(){x = 3; y = 4; buzz(x, 4); return 0;}"
+try 7 "main() {
+	xz = 5;
+	ycc = 2;
+	zac = 5;
+	zac = func(xz, ycc);
+	return zac;
+}
+
+func(x, y) {
+	return x + y;
+}"
+
+
+try 70 "main() {
+	xz = 5;
+	ycc = 2;
+	zac = 5;
+	zac = func(xz, ycc);
+	return zac;
+}
+
+func(x, y) {
+	local = 0;
+	for (i = 0; i < 10; i = i + 1) {
+		local = local + x + y;
+	}
+	return local;
+}
+
+buzz(x, y, z) {
+	return x;
+}
+"
+
+try 55 "main() {
+	ans = fizz1(10);
+	return ans;
+}
+
+fizz1(num) {
+	ans = fizz2(num);
+	return ans;
+}
+
+fizz2(num) {
+	ans = num + 45;
+	return ans;
+}
+"
+
+
+
+try 377 "main() {
+	ans = fib(14);
+	return ans;
+}
+
+
+fib(num) {
+	if (num > 1) {
+		num1 = num-1;
+		num2 = num-2;
+		return fib(num1) + fib(num2);
+	}
+	if (num == 0) {
+		return 0;
+	}
+	if (num == 1) {
+		return 1;
+	}
+}
+"
 
 
 echo OK

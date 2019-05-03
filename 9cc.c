@@ -47,16 +47,16 @@ int main(int argc, char **argv)
 
 	//for (int i = 0; code[i]; i++) {
 	for (int i = 0; (Node *)code_vec->data[i]; i++) {
-		gen( (Node *)code_vec->data[i]);
+		//gen( (Node *)code_vec->data[i]);
 
 	//gen(node);
-		printf("	pop rax\n");
+		//fprintf(stderr, "	pop rax\n");
 	}
-	//printf("	mov rsp, rbp\n");
-	//printf("	pop rbp\n");
-	//printf("	ret\n");
 	for (int i = 0; (Node *)func_definitions->data[i]; i++) {
 		gen_definition((Node *)func_definitions->data[i]);
+		//printf("	mov rsp, rbp\n");
+		//printf("	pop rbp\n");
+		//printf("	ret\n");
 	}
 	return 0;
 }
