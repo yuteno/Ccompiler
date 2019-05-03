@@ -76,7 +76,7 @@ try_function_call func_sample.c "function buzz is called, result: 7" "buzz(3, 4)
 try_function_call func_sample.c "function buzz3 is called, result: 13" "buzz3(3, 4, 6);"
 try_function_call func_sample.c "function buzz3 is called, result: 13" "buzz3(3,4,6);"
 try_function_call func_sample.c "function buzz3 is called, result: 13" "xx = 3; yy = 4; zz = 6;  buzz3(xx, yy, zz);"
-try_function_call func_sample.c "function buzz is called, result: 7" "x = 3; y = 4; buzz(x, y);"
+try_function_call func_sample.c "function buzz is called, result: 7" "x = 3; y = 4; buzz(x, 4);"
 
 
 echo OK

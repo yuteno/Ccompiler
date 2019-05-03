@@ -317,20 +317,16 @@ void gen(Node *node) {
 	}
 
 	if (node->ty == ND_NUM) {
-		//fprintf(stderr, "push %d\n", node->val);
 		printf("	push %d\n", node->val);
 		return;
 	}
 
 
 	if (node->ty == ND_FUNCTION) {
-		//fprintf(stderr, "ND_FUNC gen\n");
 		int arg_count;
-		//fprintf(stderr, "ND_FUNC\n");
-		//fprintf(stderr, "argument len: %d\n", node->arguments->len);
 		for (arg_count = 0; arg_count < node->arguments->len; arg_count++) {
 			gen(node->arguments->data[arg_count]);
-			//TODO evaluate and pop from rax to rdi, rsi, rdx, ...
+			//TODO set RSP to multiple of 16?
 			//fprintf(stderr, "argument %d\n", ((Node *)node->arguments->data[arg_count])->val);
 
 		}
@@ -361,8 +357,6 @@ void gen(Node *node) {
 					break;
 			}
 
-			//fprintf(stderr, "mov rbp %d\n", node->val);
-			//printf("	push rbp %d\n", node->val);
 			printf("	pop %s\n", reg_name);
 		}
 		printf("	call %s\n", node->name);
