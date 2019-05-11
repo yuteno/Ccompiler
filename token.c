@@ -113,6 +113,9 @@ void tokenize_vec(char *p)
 
 
 				int arg_count = 0;
+				//TODO 5/3
+				//tokenize bug in arguments with + or - etc
+				//for example func(num - 1) is tokenized func(num, -, 1);
 				if (*p != ')') {
 					//with arguments
 					Token *argument = malloc(sizeof(Token));
@@ -122,11 +125,9 @@ void tokenize_vec(char *p)
 					p += strlen(dup_p) + 1;
 					//fprintf(stderr, "after strlen: %s\n", p);
 
-					dup_p = strtok(dup_p," ,");
+					dup_p = strtok(dup_p,",");
 
 					//fprintf(stderr, "argument1 %s\n", dup_p);
-					//TODO check TK_ARGUMENT_NUM or TK_ARGUMENT_IDENT
-					//now support only TK_ARGUMENT_NUM
 					if (isdigit(*dup_p)) {
 						//fprintf(stderr, "digit OK %s\n");
 						argument->ty = TK_ARGUMENT_NUM;

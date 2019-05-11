@@ -205,8 +205,8 @@ fizz2(num) {
 
 
 
-try 377 "main() {
-	ans = fib(14);
+try 233 "main() {
+	ans = fib(13);
 	return ans;
 }
 
