@@ -286,7 +286,7 @@ Node *term() {
 
 	if (((Token *) tokens_vec->data[pos])->ty == TK_IDENT)
 		return new_node_ident(((Token *) tokens_vec->data[pos++])->name);
-	//return new_node_ident( *(((Token *) tokens_vec->data[pos++])->input));
+
 	if (((Token *) tokens_vec->data[pos])->ty == TK_FUNCTION)
 		return new_node_function(((Token *) tokens_vec->data[pos++])->name);
 

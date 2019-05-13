@@ -15,20 +15,17 @@ extern Vector *code_vec;
 extern Vector *func_definitions;
 //extern int pos;
 
-
-
-
-
-
-
 int main(int argc, char **argv)
 {
-	if (argc != 2){
+
+	if (argc != 2)
+	{
 		fprintf(stderr, "check num of argument");
 		return 1;
 	}
 
-	if (strcmp(argv[1], "-test") == 0) {
+	if (strcmp(argv[1], "-test") == 0)
+	{
 		printf("now test start\n");
 		vec_test();
 		map_test();
@@ -44,15 +41,15 @@ int main(int argc, char **argv)
 	printf(".global main\n");
 	//printf("main:\n");
 
-
-	//for (int i = 0; code[i]; i++) {
-	for (int i = 0; (Node *)code_vec->data[i]; i++) {
+	for (int i = 0; (Node *)code_vec->data[i]; i++)
+	{
 		//gen( (Node *)code_vec->data[i]);
 
-	//gen(node);
+		//gen(node);
 		//fprintf(stderr, "	pop rax\n");
 	}
-	for (int i = 0; (Node *)func_definitions->data[i]; i++) {
+	for (int i = 0; (Node *)func_definitions->data[i]; i++)
+	{
 		gen_definition((Node *)func_definitions->data[i]);
 		//printf("	mov rsp, rbp\n");
 		//printf("	pop rbp\n");
@@ -60,4 +57,3 @@ int main(int argc, char **argv)
 	}
 	return 0;
 }
-

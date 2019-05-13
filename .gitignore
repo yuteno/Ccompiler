@@ -3,3 +3,5 @@
 tmp*
 9cc
 9cc_func_call
+.vscode/
+tags

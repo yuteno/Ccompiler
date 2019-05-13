@@ -8,6 +8,8 @@ Vector *new_vector() {
 	return vec;
 }
 
+
+
 void vec_push(Vector *vec, void *elem) {
 	if (vec->capacity == vec->len) {
 		vec->capacity *= 2;
@@ -29,6 +31,8 @@ void vec_test() {
 	expect(__LINE__, 99, (int)vec->data[99]);
 	printf("Vector test OK\n");
 }
+
+
 
 
 
