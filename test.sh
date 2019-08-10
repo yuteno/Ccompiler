@@ -227,4 +227,21 @@ fib(num) {
 "
 
 
+try 5 "main(){
+	x = 5;
+	y = &x;
+	z = 10;
+	return *y;
+}
+"
+
+try 112 "main(){
+	x = 112;
+	y = 5;
+	z = &y + 32;
+
+	return *z;
+}
+"
+
 echo OK

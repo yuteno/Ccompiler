@@ -19,6 +19,8 @@ enum {
 	ND_FUNCTION,
 	ND_FUNCTION_DEF,
 	ND_ARGUMENT,
+	ND_ADDR,
+	ND_DEREF
 };
 
 typedef struct Node {

@@ -269,6 +269,22 @@ Node *unary() {
 		return term();
 	if (consume('-'))
 		return new_node('-', new_node_num(0), term());
+
+	 //TODO
+	if ((consume('*'))){
+		Node *node = malloc(sizeof(Node));
+		node->ty = ND_DEREF;
+		node->lhs = unary();
+		return node;
+	}
+
+	if ((consume('&'))){
+		Node *node = malloc(sizeof(Node));
+		node->ty = ND_ADDR;
+		node->lhs = unary();
+		return node;
+	}
+
 	return term();
 }
 
@@ -484,7 +500,18 @@ void gen(Node *node) {
 		return;
 	}
 
+	if (node->ty == ND_ADDR) {
+		gen_lval(node->lhs);
+		return;
+	}
 
+	if (node->ty == ND_DEREF) {
+		gen(node->lhs);
+		printf("	pop rax\n");
+		printf("	mov rax, [rax]\n");
+		printf("	push rax\n");
+		return;
+	}
 	gen(node->lhs);
 	gen(node->rhs);
 
